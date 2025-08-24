@@ -1,0 +1,43 @@
+using Microsoft.AspNetCore.Mvc;
+
+namespace MinhaApi.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class PessoaController : ControllerBase
+    {
+        public class Pessoa
+        {
+            public string Nome { get; set; }
+            public float Peso { get; set; }
+            public float Altura { get; set; }
+        }
+
+       
+        [HttpPost("calcular-imc")]
+        public IActionResult CalcularIMC([FromBody] Pessoa pessoa)
+        {
+            if (pessoa.Altura <= 0) return BadRequest("Altura inválida");
+
+            float imc = pessoa.Peso / (pessoa.Altura * pessoa.Altura);
+            return Ok(new { pessoa.Nome, IMC = imc });
+        }
+
+        
+        [HttpPost("tabela-imc")]
+        public IActionResult ConsultarTabela([FromBody] Pessoa pessoa)
+        {
+            if (pessoa.Altura <= 0) return BadRequest("Altura inválida");
+
+            float imc = pessoa.Peso / (pessoa.Altura * pessoa.Altura);
+            string classificacao;
+
+            if (imc < 18.5) classificacao = "Abaixo do peso";
+            else if (imc < 24.9) classificacao = "Peso normal";
+            else if (imc < 29.9) classificacao = "Sobrepeso";
+            else classificacao = "Obesidade";
+
+            return Ok(new { pessoa.Nome, IMC = imc, Classificacao = classificacao });
+        }
+    }
+}
